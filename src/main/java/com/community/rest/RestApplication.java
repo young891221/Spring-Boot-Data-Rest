@@ -30,7 +30,7 @@ public class RestApplication {
 
 			IntStream.rangeClosed(1, 10).forEach(index ->
 					bookRepository.save(Book.builder()
-							.title("스프링 부트 책"+index)
+							.title("Spring Boot Book"+index)
 							.publishedAt(LocalDateTime.now())
 							.writer(writer).build())
 			);
