@@ -11,11 +11,26 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.User.UserBuilder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
+
+import javax.annotation.PostConstruct;
 
 @SpringBootApplication
 public class RestApplication {
@@ -27,6 +42,9 @@ public class RestApplication {
 	@Bean
 	public CommandLineRunner runner(BookRepository bookRepository, WriterRepository writerRepository, StoreRepository storeRepository) throws Exception {
 		return (args) -> {
+			SecurityContextHolder.getContext().setAuthentication(
+					new UsernamePasswordAuthenticationToken("havi", "havizzang", AuthorityUtils.createAuthorityList("ROLE_USER", "ROLE_ADMIN")));
+
 			List<Book> allBooks = new ArrayList<>();
 
 			Writer writer = writerRepository.save(Writer.builder()
@@ -47,5 +65,38 @@ public class RestApplication {
 					.bookList(allBooks)
 					.build());
 		};
+	}
+
+	@PostConstruct
+	public void init() {
+
+	}
+
+	@Configuration
+	@EnableGlobalMethodSecurity(prePostEnabled = true)
+	@EnableWebSecurity
+	static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+		@Bean
+		InMemoryUserDetailsManager userDetailsManager() {
+			UserBuilder commonUser = User.withUsername("commonUser");
+			UserBuilder havi = User.withUsername("havi");
+
+			List<UserDetails> userDetailsList = new ArrayList<>();
+			userDetailsList.add(commonUser.password("common").roles("USER").build());
+			userDetailsList.add(havi.password("havizzang").roles("USER", "ADMIN").build());
+
+			return new InMemoryUserDetailsManager(userDetailsList);
+		}
+
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			http.httpBasic()
+					.and().authorizeRequests()
+					.antMatchers(HttpMethod.POST, "/books").hasRole("ADMIN")
+					.antMatchers(HttpMethod.PUT, "/books/**").hasRole("ADMIN")
+					.antMatchers(HttpMethod.PATCH, "/books/**").hasRole("ADMIN")
+					.and().csrf().disable();
+		}
 	}
 }

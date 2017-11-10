@@ -4,9 +4,8 @@ import com.community.rest.domain.Book;
 
 import org.springframework.data.rest.core.config.Projection;
 
-@Projection(name = "notContainWriter", types = { Book.class })
+@Projection(name = "getOnlyTitle", types = { Book.class })
 public interface BookNotContainWriter {
 
     String getTitle();
-
 }

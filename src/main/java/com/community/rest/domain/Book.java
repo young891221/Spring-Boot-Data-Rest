@@ -29,7 +29,7 @@ public class Book {
     private String title;
 
     @Column
-    @JsonIgnore
+    @JsonIgnore //Projection에서 사용될 경우 적용되지 않는다(Projection 우선적용)
     private Integer soldCount;
 
     @Column
