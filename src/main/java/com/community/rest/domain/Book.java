@@ -1,5 +1,7 @@
 package com.community.rest.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -27,14 +29,19 @@ public class Book {
     private String title;
 
     @Column
+    @JsonIgnore
+    private Integer soldCount;
+
+    @Column
     private LocalDateTime publishedAt;
 
     @ManyToOne(optional = false)
     private Writer writer;
 
     @Builder
-    public Book(String title, LocalDateTime publishedAt, Writer writer) {
+    public Book(String title, Integer soldCount, LocalDateTime publishedAt, Writer writer) {
         this.title = title;
+        this.soldCount = soldCount;
         this.publishedAt = publishedAt;
         this.writer = writer;
     }

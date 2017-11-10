@@ -1,8 +1,10 @@
 package com.community.rest;
 
 import com.community.rest.domain.Book;
+import com.community.rest.domain.Store;
 import com.community.rest.domain.Writer;
 import com.community.rest.repository.BookRepository;
+import com.community.rest.repository.StoreRepository;
 import com.community.rest.repository.WriterRepository;
 
 import org.springframework.boot.CommandLineRunner;
@@ -21,8 +23,13 @@ public class RestApplication {
 	}
 
 	@Bean
-	public CommandLineRunner runner(BookRepository bookRepository, WriterRepository writerRepository) throws Exception {
+	public CommandLineRunner runner(BookRepository bookRepository, WriterRepository writerRepository, StoreRepository storeRepository) throws Exception {
 		return (args) -> {
+			storeRepository.save(Store.builder()
+					.name("Havi's Book Store")
+					.location("Seoul")
+					.build());
+
 			Writer writer = writerRepository.save(Writer.builder()
 					.name("havi")
 					.age(30)
