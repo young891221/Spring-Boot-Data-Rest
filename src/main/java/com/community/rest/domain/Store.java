@@ -1,9 +1,12 @@
 package com.community.rest.domain;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import lombok.Builder;
@@ -26,12 +29,13 @@ public class Store {
     @Column
     private String location;
 
-    /*@ManyToMany
-    private List<Book> book;*/
+    @ManyToMany
+    private List<Book> book;
 
     @Builder
-    public Store(String name, String location) {
+    public Store(String name, String location, List<Book> bookList) {
         this.name = name;
         this.location = location;
+        this.book = bookList;
     }
 }

@@ -13,6 +13,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 @SpringBootApplication
@@ -25,10 +27,7 @@ public class RestApplication {
 	@Bean
 	public CommandLineRunner runner(BookRepository bookRepository, WriterRepository writerRepository, StoreRepository storeRepository) throws Exception {
 		return (args) -> {
-			storeRepository.save(Store.builder()
-					.name("Havi's Book Store")
-					.location("Seoul")
-					.build());
+			List<Book> allBooks = new ArrayList<>();
 
 			Writer writer = writerRepository.save(Writer.builder()
 					.name("havi")
@@ -36,11 +35,17 @@ public class RestApplication {
 					.build());
 
 			IntStream.rangeClosed(1, 10).forEach(index ->
-					bookRepository.save(Book.builder()
+					allBooks.add(bookRepository.save(Book.builder()
 							.title("Spring Boot Book"+index)
 							.publishedAt(LocalDateTime.now())
-							.writer(writer).build())
+							.writer(writer).build()))
 			);
+
+			storeRepository.save(Store.builder()
+					.name("Havi's Book Store")
+					.location("Seoul")
+					.bookList(allBooks)
+					.build());
 		};
 	}
 }
