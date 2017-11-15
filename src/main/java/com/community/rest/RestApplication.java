@@ -67,11 +67,6 @@ public class RestApplication {
 		};
 	}
 
-	@PostConstruct
-	public void init() {
-
-	}
-
 	@Configuration
 	@EnableGlobalMethodSecurity(prePostEnabled = true)
 	@EnableWebSecurity
